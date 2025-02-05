@@ -1,5 +1,5 @@
 "use client"
-import React, { RefAttributes, SyntheticEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Editor } from '@tiptap/react';
 import Tiptap from "@/components/Editor/TipTap";
 import ToolBar from "@/components/widgets/ToolBar/ToolBar";
@@ -9,9 +9,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePrevNext } from "@/hooks/usePrevNext";
 import { useIsOverflow } from "@/hooks/useIsOverflow";
+import { v4 as uuidv4 } from 'uuid';
 
 const defaultSlide = {
-  id: 1,
+  id: uuidv4(),
   type: "card",
   title: "Slide 1",
   content: `
@@ -29,13 +30,14 @@ export default function EditorPage() {
   const slidesRef = useRef<HTMLDivElement>(null);
   const isOverflow = useIsOverflow(slidesRef);
   const { prev, next, currentSlide, setCurrentSlide } = usePrevNext(slides);
+  const [editorValues, setEditorValues] = useState({});
 
   const handleWidgetClick = (widget: string) => {
     switch (widget) {
       case 'card':
         setSlides((prevSlides) => [...prevSlides, {
           ...defaultSlide,
-          id: defaultSlide.id + 1
+          id: uuidv4()
         }
         ]);
         break;
@@ -45,15 +47,33 @@ export default function EditorPage() {
     }
   };
 
-  const handleEditorReady = (editor: Editor, id: number) => {
+  const handleEditorReady = (editor: Editor, id: string) => {
     setEditorInstance((prevEditors) => ({
       ...prevEditors,
       [id]: editor,
     }));
   };
 
+  const handleEditorUpdate = (content: string, id: string) => {
+    setEditorValues((prevValues) => ({
+      ...prevValues,
+      [id]: content,
+    }));
+  };
+
   const handleSlideClick = (index) => {
     setCurrentSlide(index);
+  };
+
+  const handleSlideDelete = (id: string) => {
+    setSlides((prevSlides) => [...prevSlides.filter((s) => s.id !== id)]);
+
+    const deletedIndex = slides.findIndex(slide => slide.id === id);
+
+    // Adjust current slide position if needed
+    if (currentSlide >= deletedIndex && currentSlide > 0) {
+      setCurrentSlide(currentSlide - 1);
+    }
   };
 
   useEffect(() => {
@@ -73,19 +93,18 @@ export default function EditorPage() {
           <Button variant="outline" size="icon" onClick={prev} disabled={currentSlide === 0}>
             <ChevronLeft />
           </Button>
-          <SlideWrapper ref={slidesRef} isOverflow={isOverflow}>
-            {slides.map((slide, index) => (
+          <SlidesWrapper ref={slidesRef} isOverflow={isOverflow}>
+            {slides.map(({ id, content }, index) => (
 
-              <div data-slide-focus={index === currentSlide} onClick={() => handleSlideClick(index)} key={index} className=" md:basis-1/2 lg:basis-1/3">
-
-                <Slide isFocused={index === currentSlide} >
-                  <Tiptap onEditorReady={(e: Editor) => handleEditorReady(e, slide.id)} content={slide.content} />
+              <SlideWrapper data-slide-focus={index === currentSlide} onClick={() => handleSlideClick(index)} key={id} className=" md:basis-1/2 lg:basis-1/3">
+                <Slide isFocused={index === currentSlide} onDelete={() => handleSlideDelete(id)}>
+                  <Tiptap onEditorReady={(e: Editor) => handleEditorReady(e, id)} onUpdate={(c) => handleEditorUpdate(c, id)} content={editorValues?.[id] || content} />
                 </Slide>
-              </div>
+              </SlideWrapper>
             ))
             }
 
-          </SlideWrapper>
+          </SlidesWrapper>
           <Button variant="outline" size="icon" onClick={next} disabled={currentSlide === slides.length - 1}>
             <ChevronRight />
           </Button>
@@ -96,6 +115,12 @@ export default function EditorPage() {
     </>
   );
 };
+
+const SlideWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 const Container = styled.div`
   display: flex;
 `;
@@ -107,8 +132,7 @@ const CarouselWrappper = styled.div`
   width: calc(100% - 80px);
 
 `;
-
-const SlideWrapper = styled.div`
+const SlidesWrapper = styled.div`
   position: relative;
   display: flex;
   justify-content: ${({ isOverflow }) => isOverflow ? 'flex-start' : 'center'};
@@ -121,9 +145,3 @@ const SlideWrapper = styled.div`
   gap: 16px;
   padding: 20px;
 `;
-
-// <Card>
-// <CardContent className="flex aspect-square items-center justify-center p-6">
-//   <span className="text-2xl font-semibold">{index + 1}</span>
-// </CardContent>
-// </Card>

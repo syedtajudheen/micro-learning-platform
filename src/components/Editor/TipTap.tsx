@@ -6,20 +6,22 @@ import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
 import { defaultExtensions } from './extensions/extensions';
 import { NodeSelector } from './BubbleSelector/NodeSelector';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { useState } from 'react';
-import { Input } from "@/components/ui/input"
 
 // Define your extension array
 const extensions = [...defaultExtensions];
 
-const Tiptap = ({ content, onEditorReady }) => {
+const Tiptap = ({ content, onEditorReady, onUpdate }) => {
   const editor = useEditor({
     extensions,
     content,
     onBeforeCreate: ({ editor }: EditorEvents["beforeCreate"]) => {
       onEditorReady(editor);
     },
+    onUpdate: ({ editor }) => {
+      const content = editor.getHTML();
+      onUpdate(content);
+    }
   });
   const [isOpen, setIsOpen] = useState(false);
 
@@ -95,7 +97,7 @@ const Tiptap = ({ content, onEditorReady }) => {
                 <Separator orientation="vertical" className="h-4" />
                 <input
                   type="color"
-                  onInput={event => editor.chain().focus().setColor(event.target.value).run()}
+                  onInput={event => editor.chain().focus().setColor(event.target?.value).run()}
                   value={editor.getAttributes('textStyle').color}
                   data-testid="setColor"
                   className="w-6 h-6 ml-1 rounded-md border-0 p-0 cursor-pointer [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch]:rounded-md"
