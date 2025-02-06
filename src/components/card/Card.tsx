@@ -3,23 +3,28 @@ import styled from 'styled-components';
 import { useInView } from 'react-intersection-observer';
 import { Image, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
+import { useAppSelector } from '@/store/hooks';
 
-export default function Card({ children, isFocused, onDelete }) {
+export default function Card({ children, isFocused, onDelete, id }) {
   const [backgroundImage, setBackgroundImage] = React.useState(null);
   const { ref, inView } = useInView({
     threshold: 0.5, // Trigger when 50% of slide is visible
   });
-
+  const isBottomSheetOpen = useAppSelector((state) => state.editor.bottomSheet?.[id] || false);
 
   return (
     <>
-      <Wrapper ref={ref} backgroundImage={backgroundImage} className="shadow-sm bg-green-300" isFocused={isFocused}
-        style={{
-          opacity: inView ? 1 : 0.5 // Visual feedback for visible slides
-        }}
+      <Wrapper
+        ref={ref}
+        backgroundImage={backgroundImage}
+        className="overflow-hidden relative  shadow-sm bg-green-300"
+        isFocused={isFocused}
+        isOverflowHidden={isBottomSheetOpen}
+        opactiy={inView ? 1 : 0.5}
       >
         {inView && children}
       </Wrapper>
+
       <div className='w-full px-6'>
         <Button
           size="icon"
@@ -53,7 +58,8 @@ const Wrapper = styled.div`
   padding: 20px;
   width: 240px;
   height: 400px;
-  overflow: scroll;
+  overflow: ${props => props.isOverflowHidden ? 'hidden' : 'auto'};
+  opacity: ${({ opactiy }) => opactiy};
   ${props => props.isFocused && `
     border: 2px solid #007bff;
   `}

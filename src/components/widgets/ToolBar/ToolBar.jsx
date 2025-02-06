@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Plus, Type, Image, Layout, FileText } from "lucide-react"
+import { Plus, Type, Image, Layout, FileText, QuoteIcon } from "lucide-react"
 import styled from "styled-components"
 
 const widgets = [
@@ -10,6 +10,11 @@ const widgets = [
     id: 'card',
     icon: <Plus size={16} />,
     label: 'Add Card'
+  },
+  {
+    id: 'quiz',
+    icon: <QuoteIcon size={16} />,
+    label: 'Add Quiz'
   },
   {
     id: 'text',
