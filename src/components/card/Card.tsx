@@ -5,7 +5,7 @@ import { Image, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAppSelector } from '@/store/hooks';
 
-export default function Card({ children, isFocused, onDelete, id }) {
+export default function Card({ className, children, isFocused, onDelete, id }) {
   const [backgroundImage, setBackgroundImage] = React.useState(null);
   const { ref, inView } = useInView({
     threshold: 0.5, // Trigger when 50% of slide is visible
@@ -16,16 +16,16 @@ export default function Card({ children, isFocused, onDelete, id }) {
     <>
       <Wrapper
         ref={ref}
-        backgroundImage={backgroundImage}
-        className="overflow-hidden relative  shadow-sm bg-green-300"
+        $backgroundImage={backgroundImage}
+        className={`overflow-hidden  shadow-sm bg-green-300 ${className}`}
         isFocused={isFocused}
-        isOverflowHidden={isBottomSheetOpen}
+        $isOverflowHidden={isBottomSheetOpen}
         opactiy={inView ? 1 : 0.5}
       >
         {inView && children}
       </Wrapper>
 
-      <div className='w-full px-6'>
+      <div className='w-full px-1'>
         <Button
           size="icon"
           className="h-6 w-6 relative left-0"
@@ -52,19 +52,19 @@ export default function Card({ children, isFocused, onDelete, id }) {
   )
 };
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ $isOverflowHidden: boolean, $backgroundImage: string }>`
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
   width: 240px;
   height: 400px;
-  overflow: ${props => props.isOverflowHidden ? 'hidden' : 'auto'};
+  overflow: ${props => props.$isOverflowHidden ? 'hidden' : 'auto'};
   opacity: ${({ opactiy }) => opactiy};
   ${props => props.isFocused && `
     border: 2px solid #007bff;
   `}
-  ${props => props.backgroundImage && `
-    background-image: url(${props.backgroundImage});
+  ${props => props.$backgroundImage && `
+    background-image: url(${props.$backgroundImage});
     background-size: cover;
   `}
 `;

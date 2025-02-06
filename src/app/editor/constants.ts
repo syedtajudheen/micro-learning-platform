@@ -1,0 +1,54 @@
+import { MultipleQuizSlide, SingleQuizSlide, Slide } from '@/store/features/editor/types';
+import { v4 as uuidv4 } from 'uuid';
+
+export const defaultSlide: Slide = {
+  id: uuidv4(),
+  type: "card",
+  title: "Slide 1",
+  content: `
+    <br/>
+    <br/>
+    <br/>
+    <h1>Title</h1>
+    <p>This is a Description.</p>
+    `,
+};
+
+export const defaultSingleQuizSlide = (id: string): SingleQuizSlide => ({
+  id,
+  type: "quiz",
+  quizType: "single",
+  question: "What is the capital of France?",
+  options: [
+    {
+      id: "option-one",
+      label: "Option 1",
+    },
+    {
+      id: "option-two",
+      label: "Option 2",
+    }
+  ],
+  answer: "option-one",
+  comment: ""
+});
+
+
+export const defaultMultipleQuizSlide = (id: string): MultipleQuizSlide => ({
+  id,
+  type: "quiz",
+  quizType: "multiple",
+  question: "What is the capital of France?",
+  options: [
+    {
+      id: "option-one",
+      label: "Option 1",
+    },
+    {
+      id: "option-two",
+      label: "Option 2",
+    }
+  ],
+  answer: ["option-one", "option-two"],
+  comment: ""
+});

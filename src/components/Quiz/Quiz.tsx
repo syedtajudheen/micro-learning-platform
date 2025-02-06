@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import styled from "styled-components";
 import { Textarea } from "../ui/textarea";
@@ -6,74 +6,22 @@ import { Button } from "../ui/button";
 import { PlusCircle, X } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { BottomSheet } from "../BottomSheet";
-import { closeBottomSheet } from "@/store/features/editor/editorSlice";
+import { closeBottomSheet, setQuizType, updateQuizSlide } from "@/store/features/editor/editorSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { Checkbox } from "../ui/checkbox";
+import { MultipleQuizSlide, QuizSlide, SingleQuizSlide } from "@/store/features/editor/types";
 
 const inputClassName = "px-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none shadow-none focus:shadow-none resize-none";
 
-const quizSingleChoice = {
-  type: "quiz",
-  quizType: "single",
-  question: "What is the capital of France?",
-  options: [
-    {
-      id: "option-one",
-      label: "Option 1",
-    },
-    {
-      id: "option-two",
-      label: "Option 2",
-    }
-  ],
-  answer: "option-one",
-  comment: "This is a comment"
-};
-
-const quizMultipleChoice = {
-  type: "quiz",
-  quizType: "multiple",
-  question: "What is the capital of France?",
-  options: [
-    {
-      id: "option-one",
-      label: "Option 1",
-    },
-    {
-      id: "option-two",
-      label: "Option 2",
-    }
-  ],
-  answer: ["option-one", "option-two"],
-  comment: "This is a comment"
-};
-
-const defaultOptions = [
-  {
-    id: "option-one",
-    label: "Option 1",
-    value: "option-one",
-  },
-  {
-    id: "option-two",
-    label: "Option 2",
-    value: "option-two",
-  }
-]
+const placeholder = "Type your option here";
 
 export const Quiz = ({ id }) => {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [score, setScore] = useState(0);
-  const [showScore, setShowScore] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = useState('');
-  const [options, setOptions] = useState(defaultOptions);
-  const [quizType, setQuizType] = useState("single");
-  const [selectedAnswerOption, setSelectedAnswerOption] = useState("option-one");
   const containerRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
   const isBottomSheetOpen = useAppSelector((state) => state.editor.bottomSheet?.[id] || false);
+  const slide = useAppSelector((state) => state.editor.slidesById?.[id] as QuizSlide || null);
 
-  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const adjustHeight = (e) => {
     const lineHeight = 24;
     const minHeight = lineHeight;
     e.target.style.height = `${minHeight}px`;
@@ -81,42 +29,78 @@ export const Quiz = ({ id }) => {
     e.target.style.height = `${newHeight}px`;
   };
 
-  const handleAddOptionClick = () => {
-    setOptions((prevState) => ([
-      ...prevState,
-      {
-        id: `option-${prevState.length + 1}`,
-        label: `Option ${prevState.length + 1}`,
-        value: `option-${prevState.length + 1}`,
+  const handleQuestionInput = (e: React.ChangeEvent<HTMLTextAreaElement>, key: string) => {
+    adjustHeight(e);
+    dispatch(updateQuizSlide({
+      id,
+      data: {
+        [key]: e.target.value
       }
-    ]))
+    }));
   };
 
-  const handleOptionClick = (id) => {
-    setSelectedAnswerOption(id);
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>, optionId: string) => {
+    adjustHeight(e);
+    dispatch(updateQuizSlide({
+      id,
+      data: {
+        options: slide.options.map((option) => (option.id === optionId) ? { ...option, label: e.target.value } : option),
+      }
+    }));
+  };
+
+  const handleAddOptionClick = () => {
+    dispatch(updateQuizSlide({
+      id,
+      data: {
+        options: [
+          ...slide.options,
+          {
+            id: `option-${slide.options.length + 1}`,
+            label: `Option ${slide.options.length + 1}`
+          }
+        ]
+      }
+    }));
+  };
+
+  const handleOptionClick = (optionId: string) => {
+    let data = {};
+    if (slide.quizType === 'multiple') {
+      const isSelected = slide.answer.includes(optionId);
+      const answers = isSelected ? (slide as MultipleQuizSlide).answer.filter((answerId) => answerId !== optionId) : [...(slide as MultipleQuizSlide).answer, optionId];
+      data = { answer: answers };
+    } else {
+      data = { answer: optionId };
+    }
+    dispatch(updateQuizSlide({
+      id,
+      data
+    }));
   };
 
   const handleQuizTypeBtnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const { target: { name } } = e;
     const type = (name === "single") ? "single" : "multiple";
-    setQuizType(type);
     dispatch(closeBottomSheet(id));
+    dispatch(setQuizType({ id, type }));
   };
 
   const renderSingleSelect = () => {
     return (
       <RadioGroup defaultValue="option-one">
-        {options.map((option) => (
+        {slide.options.map((option) => (
           <Option key={option.id} className="flex items-center space-x-2">
             <RadioGroupItem
-              defaultValue={selectedAnswerOption}
-              value={option.value}
+              // defaultValue={selectedAnswerOption}
+              // checked={selectedAnswerOption === option.id}
+              checked={(slide as SingleQuizSlide).answer === option.id}
               onClick={() => handleOptionClick(option.id)}
             />
             <AutoGrowTextArea
               className={inputClassName}
-              placeholder="Type your option here"
-              onInput={handleInput}
+              placeholder={placeholder}
+              onInput={(e) => handleInput(e, option.id)}
             />
           </Option>
         ))}
@@ -130,13 +114,15 @@ export const Quiz = ({ id }) => {
   const renderMultiSelect = () => {
     return (
       <div className="flex flex-col gap-2">
-        {options.map((option) => (
+        {slide.options.map((option) => (
           <Option key={option.id} className="flex items-center space-x-2">
-            <Checkbox id="terms" />
+            <Checkbox id="terms"
+              checked={(slide as MultipleQuizSlide).answer.includes(option.id)}
+              onClick={() => handleOptionClick(option.id)} />
             <AutoGrowTextArea
               className={inputClassName}
-              placeholder="Type your option here"
-              onInput={handleInput}
+              placeholder={placeholder}
+              onInput={(e) => handleInput(e, option.id)}
             />
           </Option>
         ))}
@@ -146,17 +132,17 @@ export const Quiz = ({ id }) => {
       </div>
     )
   }
-  console.log(id);
+
   return (
     <QuizWrapper>
       <QuestionTextArea
         className={inputClassName}
         placeholder="Type your Question here"
-        onInput={handleInput}
+        onInput={(e) => handleQuestionInput(e, 'question')}
       />
 
-      {quizType === "single" && renderSingleSelect()}
-      {quizType === "multiple" && renderMultiSelect()}
+      {slide?.quizType === "single" && renderSingleSelect()}
+      {slide?.quizType === "multiple" && renderMultiSelect()}
 
       <CommentSection>
         <CommentTitle>
@@ -166,6 +152,7 @@ export const Quiz = ({ id }) => {
         <CommentTextArea
           className={inputClassName}
           placeholder="Comment will be displyed after the user choose any answers"
+          onInput={(e) => handleQuestionInput(e, 'comment')}
         />
       </CommentSection>
 

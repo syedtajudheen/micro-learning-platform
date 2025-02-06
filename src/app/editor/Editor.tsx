@@ -11,30 +11,23 @@ import { usePrevNext } from "@/hooks/usePrevNext";
 import { useIsOverflow } from "@/hooks/useIsOverflow";
 import { v4 as uuidv4 } from 'uuid';
 import { Quiz } from "@/components/Quiz/Quiz";
-import { openBottomSheet } from "@/store/features/editor/editorSlice";
-import { useAppDispatch } from "@/store/hooks";
+import { addSlide, openBottomSheet, removeSlide, updateEditorContent } from "@/store/features/editor/editorSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { defaultSingleQuizSlide, defaultSlide } from "./constants";
+import { Form } from "@/components/Form/Form";
 
-const defaultSlide = {
-  id: uuidv4(),
-  type: "card",
-  title: "Slide 1",
-  content: `
-  <br/>
-  <br/>
-  <br/>
-  <h1>Title</h1>
-   <p>This is a Description.</p>
-  `,
-};
 
 export default function Editor() {
-  const [containerRef, setEditorInstance] = useState({});
-  const [slides, setSlides] = useState([defaultSlide]);
+  const [editorInstances, setEditorInstance] = useState({});
   const slidesRef = useRef<HTMLDivElement>(null);
   const isOverflow = useIsOverflow(slidesRef);
-  const { prev, next, currentSlide, setCurrentSlide } = usePrevNext(slides);
-  const [editorValues, setEditorValues] = useState({});
   const dispatch = useAppDispatch();
+  const { slides, slidesById } = useAppSelector((state) => ({
+    slides: state.editor.slides,
+    slidesById: state.editor.slidesById
+  }));
+  
+  const { prev, next, currentSlide, setCurrentSlide } = usePrevNext(slides);
 
   const handleWidgetClick = (widget: string) => {
     const id = uuidv4();
@@ -48,9 +41,16 @@ export default function Editor() {
         break;
       case 'quiz':
         data = {
+          ...defaultSingleQuizSlide(id),
+          type: 'quiz'
+        };
+        dispatch(openBottomSheet(id));
+        break;
+      case 'form':
+        data = {
           ...defaultSlide,
           id,
-          type: 'quiz'
+          type: 'form'
         };
         dispatch(openBottomSheet(id));
         break;
@@ -58,7 +58,7 @@ export default function Editor() {
         break;
     }
     if (data) {
-      setSlides((prevSlides) => [...prevSlides, data]);
+      dispatch(addSlide(data));
     }
   };
 
@@ -69,21 +69,14 @@ export default function Editor() {
     }));
   };
 
-  const handleEditorUpdate = (content: string, id: string) => {
-    setEditorValues((prevValues) => ({
-      ...prevValues,
-      [id]: content,
-    }));
-  };
-
   const handleSlideClick = (index) => {
     setCurrentSlide(index);
   };
 
   const handleSlideDelete = (id: string) => {
-    setSlides((prevSlides) => [...prevSlides.filter((s) => s.id !== id)]);
+    dispatch(removeSlide(id));
 
-    const deletedIndex = slides.findIndex(slide => slide.id === id);
+    const deletedIndex = slides.findIndex(slideId => slideId === id);
 
     // Adjust current slide position if needed
     if (currentSlide >= deletedIndex && currentSlide > 0) {
@@ -92,22 +85,34 @@ export default function Editor() {
   };
 
   const renderSlides = () => {
-    return slides.map((slideData, index) => {
-      const { id, content, type } = slideData;
+    return slides.map((id, index) => {
+      const { content, type } = slidesById[id];
       switch (type) {
         case 'card':
           return (
-            <SlideWrapper data-slide-focus={index === currentSlide} onClick={() => handleSlideClick(index)} key={id} className=" md:basis-1/2 lg:basis-1/3">
+            <SlideWrapper data-slide-focus={index === currentSlide} onClick={() => handleSlideClick(index)} key={id}>
               <Slide id={id} isFocused={index === currentSlide} onDelete={() => handleSlideDelete(id)}>
-                <Tiptap onEditorReady={(e: Editor) => handleEditorReady(e, id)} onUpdate={(c) => handleEditorUpdate(c, id)} content={editorValues?.[id] || content} />
+                <Tiptap
+                  onEditorReady={(e: Editor) => handleEditorReady(e, id)}
+                  onUpdate={(content: string) => dispatch(updateEditorContent({ content, id }))}
+                  content={content}
+                />
               </Slide>
             </SlideWrapper>
           )
         case 'quiz':
           return (
-            <SlideWrapper data-slide-focus={index === currentSlide} onClick={() => handleSlideClick(index)} key={id} className=" md:basis-1/2 lg:basis-1/3">
+            <SlideWrapper data-slide-focus={index === currentSlide} onClick={() => handleSlideClick(index)} key={id}>
+              <Slide className="relative" id={id} isFocused={index === currentSlide} onDelete={() => handleSlideDelete(id)}>
+                <Quiz {...slidesById[id]} />
+              </Slide>
+            </SlideWrapper>
+          )
+        case 'form':
+          return (
+            <SlideWrapper data-slide-focus={index === currentSlide} onClick={() => handleSlideClick(index)} key={id}>
               <Slide id={id} isFocused={index === currentSlide} onDelete={() => handleSlideDelete(id)}>
-                <Quiz {...slideData} />
+                <Form {...slidesById[id]} />
               </Slide>
             </SlideWrapper>
           )
@@ -134,7 +139,7 @@ export default function Editor() {
           <Button variant="outline" size="icon" onClick={prev} disabled={currentSlide === 0}>
             <ChevronLeft />
           </Button>
-          <SlidesWrapper ref={slidesRef} isOverflow={isOverflow}>
+          <SlidesWrapper ref={slidesRef} $isOverflow={isOverflow}>
             {renderSlides()}
           </SlidesWrapper>
           <Button variant="outline" size="icon" onClick={next} disabled={currentSlide === slides.length - 1}>
@@ -164,11 +169,10 @@ const CarouselWrappper = styled.div`
   width: calc(100% - 80px);
 
 `;
-const SlidesWrapper = styled.div`
+const SlidesWrapper = styled.div<{ $isOverflow: boolean }>`
   position: relative;
   display: flex;
-  justify-content: ${({ isOverflow }) => isOverflow ? 'flex-start' : 'center'};
-  /* justify-content: flex-start; */
+  justify-content: ${({ $isOverflow }) => $isOverflow ? 'flex-start' : 'center'};
   align-items: center;
   height: max-content;
   overflow-x: auto;

@@ -19,7 +19,7 @@ const Tiptap = ({ content, onEditorReady, onUpdate }) => {
       onEditorReady(editor);
     },
     onUpdate: ({ editor }) => {
-      const content = editor.getHTML();
+      const content = editor.getJSON();
       onUpdate(content);
     }
   });
