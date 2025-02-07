@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import styled from 'styled-components';
 import { useInView } from 'react-intersection-observer';
-import { Image, Trash2 } from 'lucide-react';
+import { Image, Trash2, Video } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
@@ -12,7 +12,7 @@ import {
   MenubarSeparator,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-import { openOverlay, setSlideBackgroundImage } from '@/store/features/editor/editorSlice';
+import { openOverlay, setSlideBackgroundImage, setVideo } from '@/store/features/editor/editorSlice';
 import { OverlayTypes } from '@/store/features/editor/types';
 import { AlertModal } from '../AlertModal';
 import { AlertDialog, AlertDialogTrigger } from '../ui/alert-dialog';
@@ -23,7 +23,11 @@ export default function Card({ className, children, isFocused, onDelete, id }) {
   });
   const menuRef = useRef(null);
   const isBottomSheetOpen = useAppSelector((state) => state.editor.bottomSheet?.[id] || false);
-  const background = useAppSelector((state) => state.editor.slidesById[id]?.background?.image);
+  const { type, background } = useAppSelector((state) => ({
+    background: state.editor.slidesById[id]?.background,
+    type: state.editor.slidesById[id]?.type
+  }));
+
   const dispatch = useAppDispatch();
 
   const handleUpload = (e) => {
@@ -37,12 +41,30 @@ export default function Card({ className, children, isFocused, onDelete, id }) {
     }
   };
 
+  const handleVideoUpload = async (e) => {
+    if (e.target.files?.[0]) {
+      const file = e.target.files[0];
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+      console.log(data);
+      dispatch(setVideo({ id, video: data }));
+    }
+  };
+
   return (
     <>
       <Wrapper
         ref={ref}
-        $backgroundImage={background}
-        className={`overflow-hidden  shadow-sm bg-green-300 ${className}`}
+        $backgroundImage={background?.image}
+        bgColor={background?.color}
+        className={`overflow-hidden  shadow-sm ${className}`}
         $isFocused={isFocused}
         $isOverflowHidden={isBottomSheetOpen}
         opactiy={inView ? 1 : 0.5}
@@ -52,15 +74,19 @@ export default function Card({ className, children, isFocused, onDelete, id }) {
 
       <Menubar className='flex justify-between w-full pl-0 border-none shadow-none'>
         <MenubarMenu>
-          <MenubarTrigger>
-            <Button
-              size="icon"
-              className=" h-6 w-6 relative left-0"
-              variant={'ghost'}
-            >
-              <Image className="h-3 w-3" alt="background image" size={14} />
-            </Button>
-          </MenubarTrigger>
+
+          {type !== 'video' && (
+            <MenubarTrigger>
+              <Button
+                size="icon"
+                className=" h-6 w-6 relative left-0"
+                variant={'ghost'}
+              >
+                <Image className="h-3 w-3" size={14} />
+              </Button>
+            </MenubarTrigger>
+          )}
+
           <MenubarContent>
             <MenubarItem onClick={() => dispatch(openOverlay({ id, type: OverlayTypes.GIPHY }))}>
               Add Giphy Gif
@@ -82,6 +108,23 @@ export default function Card({ className, children, isFocused, onDelete, id }) {
           </MenubarContent>
         </MenubarMenu>
 
+        {type === 'video' && (
+          <Button
+            size="icon"
+            className="h-6 w-6 relative left-0"
+            variant={'ghost'}
+          >
+            <Video className="h-3 w-3" size={14} />
+            <input
+              type='file'
+              accept='video/*'
+              onClick={e => e.stopPropagation()}
+              onChange={handleVideoUpload}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+            />
+          </Button>
+        )}
+
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button className="h-6 w-6 relative" variant={"ghost"}>
@@ -96,13 +139,13 @@ export default function Card({ className, children, isFocused, onDelete, id }) {
             onConfirm={onDelete}
           />
         </AlertDialog>
-       
+
       </Menubar>
     </>
   )
 };
 
-const Wrapper = styled.div<{ $isOverflowHidden: boolean, $backgroundImage: string }>`
+const Wrapper = styled.div<{ $isOverflowHidden: boolean; $backgroundImage: string; bgColor: string }>`
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -117,5 +160,8 @@ const Wrapper = styled.div<{ $isOverflowHidden: boolean, $backgroundImage: strin
     background-image: url(${props.$backgroundImage});
     background-size: cover;
     background-position: center;
+  `}
+  ${({ bgColor }) => bgColor && `
+    background-color: ${bgColor};
   `}
 `;

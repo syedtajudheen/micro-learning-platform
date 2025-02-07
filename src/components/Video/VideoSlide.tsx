@@ -11,9 +11,8 @@ import { Gestures } from './Gestures';
 
 export const VideoSlide = ({ id }) => {
   const player = useRef<MediaPlayerInstance>(null);
-  const videoBg = useAppSelector((state) => state.editor.slidesById[id]?.video);
+  const video = useAppSelector((state) => state.editor.slidesById[id]?.video);
   const [isVideoCompleted, setIsVideoCompleted] = useState(false);
-
 
   const handleEnded = () => {
     setIsVideoCompleted(true);
@@ -23,7 +22,7 @@ export const VideoSlide = ({ id }) => {
     const element = document.getElementById('video-progress');
 
     // Subscribe for updates without triggering renders.
-    return player.current!.subscribe(({ currentTime, duration }) => {
+    return player.current?.subscribe(({ currentTime, duration }) => {
       if (element) {
         // Update the progress bar. (currentTime > 0.4s) added to fix second time playing progress sync issue
         element.style.width = currentTime > 0.4 ? `${(currentTime / duration) * 100}%` : '0%';
@@ -33,12 +32,12 @@ export const VideoSlide = ({ id }) => {
 
   return (
     <div className="absolute inset-0 h-full w-full">
-      {videoBg && (
+      {video?.url && (
         <MediaPlayer
           ref={player}
           className="w-full h-full bg-slate-900 text-white font-sans overflow-hidden rounded-md ring-media-focus data-[focus]:ring-4"
           title="Sprite Fight"
-          src="https://videos.pexels.com/video-files/27788440/12225044_1440_2560_30fps.mp4"
+          src={video.url}
           crossOrigin
           playsInline
           style={{ aspectRatio: '9/16' }}

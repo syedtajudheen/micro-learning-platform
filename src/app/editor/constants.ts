@@ -13,7 +13,7 @@ export const defaultSlide: Slide = {
     <p>This is a Description.</p>
     `,
   background: {
-    color: "#ffffff",
+    color: "#86efac",
     image: "",
     video: ""
   }
@@ -37,7 +37,7 @@ export const defaultSingleQuizSlide = (id: string): SingleQuizSlide => ({
   answer: "option-one",
   comment: "",
   background: {
-    color: "rgba(134 239 172, 1)",
+    color: "#86efac",
     image: "",
     video: ""
   }
@@ -62,7 +62,7 @@ export const defaultMultipleQuizSlide = (id: string): MultipleQuizSlide => ({
   answer: ["option-one", "option-two"],
   comment: "",
   background: {
-    color: "#ffffff",
+    color: "#86efac",
     image: "",
     video: ""
   }
@@ -72,10 +72,17 @@ export const defaultVideoSlide = (id: string) => ({
   id,
   type: "video",
   title: "Slide 1",
-  video: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  video: {
+    fileName: null,
+    fileSize: null,
+    fileType: null,
+    message: null,
+    url: null
+  },
   background: {
-    color: "#ffffff",
+    color: "#86efac",
     image: "",
     video: ""
   }
 });
+// "https://www.youtube.com/watch?v=dQw4w9WgXcQ"

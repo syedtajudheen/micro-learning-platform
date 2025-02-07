@@ -36,6 +36,10 @@ const editorSlice = createSlice
         const { id, image } = action.payload;
         state.slidesById[id].background.image = image;
       },
+      setVideo: (state, action: PayloadAction<{ id: string, video: unknown }>) => {
+        const { id, video } = action.payload;
+        state.slidesById[id].video = video;
+      },
       // ******* OVERLAY ACTIONS *******
       openOverlay: (state, action: PayloadAction<{ type: OverlayType, id: string; }>) => {
         state.overlay = {
@@ -97,6 +101,7 @@ export const {
   openOverlay,
   setSlideBackgroundImage,
   setQuizType,
+  setVideo,
   updateEditorContent,
   updateQuizSlide,
   updateFormSlide
