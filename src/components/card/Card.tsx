@@ -62,7 +62,7 @@ export default function Card({ className, children, isFocused, onDelete, id }) {
             </Button>
           </MenubarTrigger>
           <MenubarContent>
-            <MenubarItem onClick={() => dispatch(openOverlay({ id, type: OverlayTypes.GIPHY }))} >
+            <MenubarItem onClick={() => dispatch(openOverlay({ id, type: OverlayTypes.GIPHY }))}>
               Add Giphy Gif
             </MenubarItem>
             <MenubarItem onClick={() => dispatch(openOverlay({ id, type: OverlayTypes.UNSPLASH }))}>
@@ -96,7 +96,7 @@ export default function Card({ className, children, isFocused, onDelete, id }) {
             onConfirm={onDelete}
           />
         </AlertDialog>
-
+       
       </Menubar>
     </>
   )

@@ -13,10 +13,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { Quiz } from "@/components/Quiz/Quiz";
 import { addSlide, closeOverlay, openBottomSheet, removeSlide, setSlideBackgroundImage, updateEditorContent } from "@/store/features/editor/editorSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { defaultSingleQuizSlide, defaultSlide } from "./constants";
+import { defaultSingleQuizSlide, defaultSlide, defaultVideoSlide } from "./constants";
 import { Form } from "@/components/Form/Form";
 import { Sheet } from "@/components/ui/sheet";
 import { Drawer } from "@/components/Drawer/Drawer";
+import { VideoSlide } from "@/components/Video/VideoSlide";
 
 
 export default function Editor() {
@@ -57,6 +58,13 @@ export default function Editor() {
         };
         dispatch(openBottomSheet(id));
         break;
+      case 'video':
+        data = {
+          ...defaultVideoSlide(id),
+          id,
+          type: 'video'
+        };
+        break;
       default:
         break;
     }
@@ -96,7 +104,7 @@ export default function Editor() {
     dispatch(setSlideBackgroundImage({ id: overlay.id, image: item.urls.regular }));
     handleSheetClose();
   };
-  
+
   const handleSheetClose = () => {
     dispatch(closeOverlay());
   };
@@ -130,6 +138,14 @@ export default function Editor() {
             <SlideWrapper data-slide-focus={index === currentSlide} onClick={() => handleSlideClick(index)} key={id}>
               <Slide id={id} isFocused={index === currentSlide} onDelete={() => handleSlideDelete(id)}>
                 <Form {...slidesById[id]} />
+              </Slide>
+            </SlideWrapper>
+          )
+        case 'video':
+          return (
+            <SlideWrapper data-slide-focus={index === currentSlide} onClick={() => handleSlideClick(index)} key={id}>
+              <Slide className="relative" id={id} isFocused={index === currentSlide} onDelete={() => handleSlideDelete(id)}>
+                <VideoSlide {...slidesById[id]} />
               </Slide>
             </SlideWrapper>
           )

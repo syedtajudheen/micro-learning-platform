@@ -12,11 +12,11 @@ export const defaultSlide: Slide = {
     <h1>Title</h1>
     <p>This is a Description.</p>
     `,
-    background: {
-      color: "#ffffff",
-      image: "",
-      video: ""
-    }
+  background: {
+    color: "#ffffff",
+    image: "",
+    video: ""
+  }
 };
 
 export const defaultSingleQuizSlide = (id: string): SingleQuizSlide => ({
@@ -61,6 +61,18 @@ export const defaultMultipleQuizSlide = (id: string): MultipleQuizSlide => ({
   ],
   answer: ["option-one", "option-two"],
   comment: "",
+  background: {
+    color: "#ffffff",
+    image: "",
+    video: ""
+  }
+});
+
+export const defaultVideoSlide = (id: string) => ({
+  id,
+  type: "video",
+  title: "Slide 1",
+  video: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
   background: {
     color: "#ffffff",
     image: "",
