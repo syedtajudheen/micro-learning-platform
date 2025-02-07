@@ -6,12 +6,17 @@ export const defaultSlide: Slide = {
   type: "card",
   title: "Slide 1",
   content: `
-    <br/>
-    <br/>
-    <br/>
+    <p/>
+    <p/>
+    <p/>
     <h1>Title</h1>
     <p>This is a Description.</p>
     `,
+    background: {
+      color: "#ffffff",
+      image: "",
+      video: ""
+    }
 };
 
 export const defaultSingleQuizSlide = (id: string): SingleQuizSlide => ({
@@ -30,7 +35,12 @@ export const defaultSingleQuizSlide = (id: string): SingleQuizSlide => ({
     }
   ],
   answer: "option-one",
-  comment: ""
+  comment: "",
+  background: {
+    color: "rgba(134 239 172, 1)",
+    image: "",
+    video: ""
+  }
 });
 
 
@@ -50,5 +60,10 @@ export const defaultMultipleQuizSlide = (id: string): MultipleQuizSlide => ({
     }
   ],
   answer: ["option-one", "option-two"],
-  comment: ""
+  comment: "",
+  background: {
+    color: "#ffffff",
+    image: "",
+    video: ""
+  }
 });

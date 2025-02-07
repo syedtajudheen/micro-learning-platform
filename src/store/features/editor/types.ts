@@ -7,15 +7,27 @@ export interface EditorState {
   bottomSheet: {
     [key: string]: boolean
   };
-  bottomSheetType: 'quiz' | 'text' | 'image' | 'layout';
+  overlay: {
+    isOpen: boolean;
+    type: OverlayType | null;
+    id: string | null;
+  }
   // other editor state
 }
+
+export type Background = {
+  color: string;
+  image: string;
+  video: string;
+};
 
 export type CardSlide = {
   id: string;
   type: string;
   title: string;
   content: unknown;
+  background: Background;
+  // bottomSheetType: 'quiz' | 'text' | 'image' | 'layout';
 };
 
 export type SingleQuizSlide = {
@@ -29,6 +41,7 @@ export type SingleQuizSlide = {
   }[];
   answer: string;
   comment: string;
+  background: Background
 }
 
 export type MultipleQuizSlide = {
@@ -42,8 +55,16 @@ export type MultipleQuizSlide = {
   }[];
   answer: string[];
   comment: string;
+  background: Background
 };
 
 export type QuizSlide = SingleQuizSlide | MultipleQuizSlide;
 
 export type Slide = CardSlide | QuizSlide;
+
+export enum OverlayTypes {
+  GIPHY = 'GIPHY',
+  UNSPLASH = 'UNSPLASH'
+};
+
+export type OverlayType = OverlayTypes.GIPHY | OverlayTypes.UNSPLASH;

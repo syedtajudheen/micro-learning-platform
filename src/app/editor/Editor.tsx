@@ -11,10 +11,12 @@ import { usePrevNext } from "@/hooks/usePrevNext";
 import { useIsOverflow } from "@/hooks/useIsOverflow";
 import { v4 as uuidv4 } from 'uuid';
 import { Quiz } from "@/components/Quiz/Quiz";
-import { addSlide, openBottomSheet, removeSlide, updateEditorContent } from "@/store/features/editor/editorSlice";
+import { addSlide, closeOverlay, openBottomSheet, removeSlide, setSlideBackgroundImage, updateEditorContent } from "@/store/features/editor/editorSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { defaultSingleQuizSlide, defaultSlide } from "./constants";
 import { Form } from "@/components/Form/Form";
+import { Sheet } from "@/components/ui/sheet";
+import { Drawer } from "@/components/Drawer/Drawer";
 
 
 export default function Editor() {
@@ -22,11 +24,12 @@ export default function Editor() {
   const slidesRef = useRef<HTMLDivElement>(null);
   const isOverflow = useIsOverflow(slidesRef);
   const dispatch = useAppDispatch();
-  const { slides, slidesById } = useAppSelector((state) => ({
+  const { slides, slidesById, overlay } = useAppSelector((state) => ({
     slides: state.editor.slides,
-    slidesById: state.editor.slidesById
+    slidesById: state.editor.slidesById,
+    overlay: state.editor.overlay,
   }));
-  
+
   const { prev, next, currentSlide, setCurrentSlide } = usePrevNext(slides);
 
   const handleWidgetClick = (widget: string) => {
@@ -84,6 +87,20 @@ export default function Editor() {
     }
   };
 
+  const handleGiphyClick = (item: any) => {
+    dispatch(setSlideBackgroundImage({ id: overlay.id, image: item.images.original.url }));
+    handleSheetClose();
+  };
+
+  const handleUnsplashImgClick = (item: any) => {
+    dispatch(setSlideBackgroundImage({ id: overlay.id, image: item.urls.regular }));
+    handleSheetClose();
+  };
+  
+  const handleSheetClose = () => {
+    dispatch(closeOverlay());
+  };
+
   const renderSlides = () => {
     return slides.map((id, index) => {
       const { content, type } = slidesById[id];
@@ -135,19 +152,24 @@ export default function Editor() {
     <>
       <h1 className="text-center font-semibold p-8">Micro-Learning Platform</h1>
       <Container>
-        <CarouselWrappper>
-          <Button variant="outline" size="icon" onClick={prev} disabled={currentSlide === 0}>
-            <ChevronLeft />
-          </Button>
-          <SlidesWrapper ref={slidesRef} $isOverflow={isOverflow}>
-            {renderSlides()}
-          </SlidesWrapper>
-          <Button variant="outline" size="icon" onClick={next} disabled={currentSlide === slides.length - 1}>
-            <ChevronRight />
-          </Button>
-        </CarouselWrappper>
-
-        <ToolBar onClick={handleWidgetClick} />
+        <Sheet
+          open={overlay.isOpen}
+          onOpenChange={handleSheetClose}
+        >
+          <CarouselWrappper>
+            <Button variant="outline" size="icon" onClick={prev} disabled={currentSlide === 0}>
+              <ChevronLeft />
+            </Button>
+            <SlidesWrapper ref={slidesRef} $isOverflow={isOverflow}>
+              {renderSlides()}
+            </SlidesWrapper>
+            <Button variant="outline" size="icon" onClick={next} disabled={currentSlide === slides.length - 1}>
+              <ChevronRight />
+            </Button>
+          </CarouselWrappper>
+          <ToolBar onClick={handleWidgetClick} />
+          <Drawer type={overlay.type} onGifClick={handleGiphyClick} onUnsplashImageClick={handleUnsplashImgClick} />
+        </Sheet>
       </Container>
     </>
   );

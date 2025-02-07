@@ -1,14 +1,21 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Slide } from "./types";
+import { EditorState, OverlayType, Slide } from "./types";
 import { defaultSingleQuizSlide, defaultSlide, defaultMultipleQuizSlide } from "@/app/editor/constants";
 
-const initialState = {
+const defaultOverlay = {
+  isOpen: false,
+  type: null,
+  id: null
+};
+
+const initialState: EditorState = {
   slidesById: {
     [defaultSlide.id]: defaultSlide
   },
   slides: [defaultSlide.id],
-  currentSlide: null,
-  bottomSheet: {}
+  currentSlide: 0,
+  bottomSheet: {},
+  overlay: defaultOverlay
 };
 
 const editorSlice = createSlice
@@ -24,6 +31,21 @@ const editorSlice = createSlice
       removeSlide: (state, action: PayloadAction<string>) => {
         state.slides = state.slides.filter((slideId) => slideId !== action.payload);
         state.slidesById[action.payload] = null;
+      },
+      setSlideBackgroundImage: (state, action: PayloadAction<{ id: string, image: string }>) => {
+        const { id, image } = action.payload;
+        state.slidesById[id].background.image = image;
+      },
+      // ******* OVERLAY ACTIONS *******
+      openOverlay: (state, action: PayloadAction<{ type: OverlayType, id: string; }>) => {
+        state.overlay = {
+          isOpen: true,
+          type: action.payload.type,
+          id: action.payload.id
+        };
+      },
+      closeOverlay: (state) => {
+        state.overlay = defaultOverlay;
       },
       // ******* TIPTAP EDITOR *******
       updateEditorContent: (state, action: PayloadAction<{ id: string, content: string }>) => {
@@ -69,8 +91,11 @@ const editorSlice = createSlice
 export const {
   addSlide,
   closeBottomSheet,
+  closeOverlay,
   openBottomSheet,
   removeSlide,
+  openOverlay,
+  setSlideBackgroundImage,
   setQuizType,
   updateEditorContent,
   updateQuizSlide,
