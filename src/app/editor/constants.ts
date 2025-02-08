@@ -86,3 +86,21 @@ export const defaultVideoSlide = (id: string) => ({
   }
 });
 // "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+
+export const defaultAudioSlide = (id: string) => ({
+  id,
+  type: "audio",
+  title: "Slide 1",
+  audio: {
+    fileName: null,
+    fileSize: null,
+    fileType: null,
+    message: null,
+    url: null
+  },
+  background: {
+    color: "#86efac",
+    image: "",
+    video: ""
+  }
+});

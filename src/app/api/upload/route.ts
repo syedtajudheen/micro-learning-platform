@@ -1,4 +1,4 @@
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, access } from 'fs/promises';
 import { NextResponse } from 'next/server';
 import path from 'path';
 
@@ -11,18 +11,32 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No file received' }, { status: 400 });
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Simulate 3 second processing time
+    await new Promise(resolve => setTimeout(resolve, 3000));
 
-    // Create uploads directory if it doesn't exist
     const uploadDir = path.join(process.cwd(), 'public/uploads');
     await mkdir(uploadDir, { recursive: true });
-
-    // Save file with timestamp to prevent naming conflicts
+    
     const fileName = `${Date.now()}-${file.name}`;
     const filePath = path.join(uploadDir, fileName);
-
-    await writeFile(filePath, buffer);
+    
+    // Check if file exists
+    try {
+      await access(filePath);
+      // File exists, return existing path
+      return NextResponse.json({
+        url: `/uploads/${fileName}`,
+        message: 'File already exists',
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type
+      });
+    } catch {
+      // File doesn't exist, write it
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      await writeFile(filePath, buffer);
+    }
 
     return NextResponse.json({
       url: `/uploads/${fileName}`,

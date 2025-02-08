@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Plus, Type, Image, Layout, FileText, QuoteIcon, FormInput, Video } from "lucide-react"
+import { AudioLines, Plus, Type, Image, Layout, FileText, QuoteIcon, FormInput, Video } from "lucide-react"
 import styled from "styled-components"
 
 const widgets = [
@@ -25,6 +25,11 @@ const widgets = [
     id: 'video',
     icon: <Video size={16} />,
     label: 'Video'
+  },
+  {
+    id: 'audio',
+    icon: <AudioLines size={16} />,
+    label: 'Audio'
   },
   {
     id: 'text',

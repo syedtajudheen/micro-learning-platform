@@ -13,11 +13,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { Quiz } from "@/components/Quiz/Quiz";
 import { addSlide, closeOverlay, openBottomSheet, removeSlide, setSlideBackgroundImage, updateEditorContent } from "@/store/features/editor/editorSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { defaultSingleQuizSlide, defaultSlide, defaultVideoSlide } from "./constants";
+import { defaultAudioSlide, defaultSingleQuizSlide, defaultSlide, defaultVideoSlide } from "./constants";
 import { Form } from "@/components/Form/Form";
 import { Sheet } from "@/components/ui/sheet";
 import { Drawer } from "@/components/Drawer/Drawer";
 import { VideoSlide } from "@/components/Video/VideoSlide";
+import { Audio } from "@/components/Audio/Audio";
 
 
 export default function Editor() {
@@ -65,11 +66,19 @@ export default function Editor() {
           type: 'video'
         };
         break;
+      case 'audio':
+        data = {
+          ...defaultAudioSlide(id),
+          id,
+          type: 'audio'
+        };
+        break;
       default:
         break;
     }
     if (data) {
       dispatch(addSlide(data));
+      dispatch(openBottomSheet(id));
     }
   };
 
@@ -146,6 +155,14 @@ export default function Editor() {
             <SlideWrapper data-slide-focus={index === currentSlide} onClick={() => handleSlideClick(index)} key={id}>
               <Slide className="relative" id={id} isFocused={index === currentSlide} onDelete={() => handleSlideDelete(id)}>
                 <VideoSlide {...slidesById[id]} />
+              </Slide>
+            </SlideWrapper>
+          )
+        case 'audio':
+          return (
+            <SlideWrapper data-slide-focus={index === currentSlide} onClick={() => handleSlideClick(index)} key={id}>
+              <Slide className="relative" id={id} isFocused={index === currentSlide} onDelete={() => handleSlideDelete(id)}>
+                <Audio {...slidesById[id]} />
               </Slide>
             </SlideWrapper>
           )

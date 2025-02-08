@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { EditorState, OverlayType, Slide } from "./types";
+import { AudioSlide, CardSlide, EditorState, MediaFile, OverlayType, Slide, VideoSlide } from "./types";
 import { defaultSingleQuizSlide, defaultSlide, defaultMultipleQuizSlide } from "@/app/editor/constants";
 
 const defaultOverlay = {
@@ -34,11 +34,15 @@ const editorSlice = createSlice
       },
       setSlideBackgroundImage: (state, action: PayloadAction<{ id: string, image: string }>) => {
         const { id, image } = action.payload;
-        state.slidesById[id].background.image = image;
+        (state.slidesById[id] as Slide).background.image = image;
       },
-      setVideo: (state, action: PayloadAction<{ id: string, video: unknown }>) => {
+      setAudio: (state, action: PayloadAction<{ id: string, audio: MediaFile }>) => {
+        const { id, audio } = action.payload;
+        (state.slidesById[id] as AudioSlide).audio = audio;
+      },
+      setVideo: (state, action: PayloadAction<{ id: string, video: MediaFile }>) => {
         const { id, video } = action.payload;
-        state.slidesById[id].video = video;
+        (state.slidesById[id] as VideoSlide).video = video;
       },
       // ******* OVERLAY ACTIONS *******
       openOverlay: (state, action: PayloadAction<{ type: OverlayType, id: string; }>) => {
@@ -54,7 +58,7 @@ const editorSlice = createSlice
       // ******* TIPTAP EDITOR *******
       updateEditorContent: (state, action: PayloadAction<{ id: string, content: string }>) => {
         const { id, content } = action.payload;
-        state.slidesById[id].content = content;
+        (state.slidesById[id] as CardSlide).content = content;
       },
       // ******* QUIZ SLIDE *******
       setQuizType: (state, action: PayloadAction<{ id: string, type: string }>) => {
@@ -101,6 +105,7 @@ export const {
   openOverlay,
   setSlideBackgroundImage,
   setQuizType,
+  setAudio,
   setVideo,
   updateEditorContent,
   updateQuizSlide,

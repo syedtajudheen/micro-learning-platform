@@ -21,6 +21,14 @@ export type Background = {
   video: string;
 };
 
+export type MediaFile = {
+  fileName: string | null;
+  fileSize: number | null;
+  fileType: string | null;
+  message: string | null;
+  url: string | null;
+};
+
 export type CardSlide = {
   id: string;
   type: string;
@@ -58,9 +66,25 @@ export type MultipleQuizSlide = {
   background: Background
 };
 
+export type VideoSlide = {
+  id: string;
+  type: string;
+  title: string;
+  video: MediaFile;
+  background: Background;
+};
+
+export type AudioSlide = {
+  id: string;
+  type: string;
+  title: string;
+  audio: MediaFile;
+  background: Background;
+};
+
 export type QuizSlide = SingleQuizSlide | MultipleQuizSlide;
 
-export type Slide = CardSlide | QuizSlide;
+export type Slide = CardSlide | QuizSlide | VideoSlide | AudioSlide;
 
 export enum OverlayTypes {
   GIPHY = 'GIPHY',
