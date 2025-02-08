@@ -12,6 +12,7 @@ import { closeBottomSheet, setAudio } from '@/store/features/editor/editorSlice'
 import { AudioControlButton } from './AudioControlButton';
 
 export const Audio = ({ id }) => {
+  const progressId = `audio-progress-${id}`;
   const dispatch = useAppDispatch();
   const isBottomSheetOpen = useAppSelector((state) => state.editor.bottomSheet?.[id] || false);
   const audioBg = useAppSelector((state) => state.editor.slidesById[id]?.audio);
@@ -43,7 +44,7 @@ export const Audio = ({ id }) => {
   };
 
   useEffect(() => {
-    const element = document.getElementById('audio-progress');
+    const element = document.getElementById(progressId);
     if (!element) return;
 
     // Subscribe for updates without triggering renders.
@@ -53,13 +54,14 @@ export const Audio = ({ id }) => {
         element.style.width = currentTime > 0.4 ? `${(currentTime / duration) * 100}%` : '0%';
       }
     });
-  }, [audioBg?.url]);
-
+  }, [audioBg?.url, progressId]);
+  
   return (
     <div>
       <div className="absolute bottom-4 left-4 right-4">
         {audioBg?.url && (
           <MediaPlayer
+            key={`player-${id}`}
             ref={player}
             className="bg-black/20 backdrop-blur-sm text-white rounded-full shadow-lg"
             title="Audio Track"
@@ -70,7 +72,7 @@ export const Audio = ({ id }) => {
               <audio />
             </MediaProvider>
 
-            <AudioControlButton />
+            <AudioControlButton progressId={progressId} />
 
           </MediaPlayer>
         )}

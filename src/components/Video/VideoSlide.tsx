@@ -13,13 +13,14 @@ export const VideoSlide = ({ id }) => {
   const player = useRef<MediaPlayerInstance>(null);
   const video = useAppSelector((state) => state.editor.slidesById[id]?.video);
   const [isVideoCompleted, setIsVideoCompleted] = useState(false);
+  const progressId = `video-progress-${id}`;
 
   const handleEnded = () => {
     setIsVideoCompleted(true);
   };
 
   useEffect(() => {
-    const element = document.getElementById('video-progress');
+    const element = document.getElementById(progressId);
 
     // Subscribe for updates without triggering renders.
     return player.current?.subscribe(({ currentTime, duration }) => {
@@ -28,12 +29,13 @@ export const VideoSlide = ({ id }) => {
         element.style.width = currentTime > 0.4 ? `${(currentTime / duration) * 100}%` : '0%';
       }
     });
-  }, []);
+  }, [video.url, progressId]);
 
   return (
     <div className="absolute inset-0 h-full w-full">
       {video?.url && (
         <MediaPlayer
+          key={id}
           ref={player}
           className="w-full h-full bg-slate-900 text-white font-sans overflow-hidden rounded-md ring-media-focus data-[focus]:ring-4"
           title="Sprite Fight"
@@ -47,7 +49,7 @@ export const VideoSlide = ({ id }) => {
             <video className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-800">
               <div
-                id="video-progress"
+                id={progressId}
                 className="h-full bg-white transition-all duration-200"
               />
             </div>
