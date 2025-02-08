@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import styled from 'styled-components';
 import { useInView } from 'react-intersection-observer';
-import { Image, Trash2, Video } from 'lucide-react';
+import { Image, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
@@ -12,7 +12,7 @@ import {
   MenubarSeparator,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-import { openOverlay, setSlideBackgroundImage, setVideo } from '@/store/features/editor/editorSlice';
+import { openOverlay, setSlideBackgroundImage } from '@/store/features/editor/editorSlice';
 import { OverlayTypes } from '@/store/features/editor/types';
 import { AlertModal } from '../AlertModal';
 import { AlertDialog, AlertDialogTrigger } from '../ui/alert-dialog';
@@ -38,23 +38,6 @@ export default function Card({ className, children, isFocused, onDelete, id }) {
 
       // Close the menu
       menuRef.current?.click();
-    }
-  };
-
-  const handleVideoUpload = async (e) => {
-    if (e.target.files?.[0]) {
-      const file = e.target.files[0];
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-      console.log(data);
-      dispatch(setVideo({ id, video: data }));
     }
   };
 
@@ -107,23 +90,6 @@ export default function Card({ className, children, isFocused, onDelete, id }) {
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
-
-        {type === 'video' && (
-          <Button
-            size="icon"
-            className="h-6 w-6 relative left-0"
-            variant={'ghost'}
-          >
-            <Video className="h-3 w-3" size={14} />
-            <input
-              type='file'
-              accept='video/*'
-              onClick={e => e.stopPropagation()}
-              onChange={handleVideoUpload}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-            />
-          </Button>
-        )}
 
         <AlertDialog>
           <AlertDialogTrigger asChild>

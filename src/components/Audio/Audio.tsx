@@ -41,6 +41,7 @@ export const Audio = ({ id }) => {
       dispatch(closeBottomSheet(id));
       setIsUploading(false);
     }
+    setIsUploading(false);
   };
 
   useEffect(() => {
@@ -80,7 +81,7 @@ export const Audio = ({ id }) => {
 
       <BottomSheet isOpen={isBottomSheetOpen} onClose={() => dispatch(closeBottomSheet(id))}>
         <p className='flex justify-center items-center font-sans text-sm'>
-          <AudioLines className="h-4 w-4 pr-1" size={14} /> Audio
+          <AudioLines className="h-5 w-5 pr-1" size={14} /> Audio
         </p>
         <div className="flex flex-col justify-center align-center h-[65px]">
           {isUploading && (
