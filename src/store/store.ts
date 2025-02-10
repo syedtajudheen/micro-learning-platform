@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
 import editorReducer from './features/editor/editorSlice';
+import contentPlayerReducer from './features/contentPlayer/contentPlayerSlice';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
+      contentPlayer: contentPlayerReducer,
       editor: editorReducer
     }
   })

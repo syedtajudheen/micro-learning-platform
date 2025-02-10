@@ -5,13 +5,41 @@ export const defaultSlide: Slide = {
   id: uuidv4(),
   type: "card",
   title: "Slide 1",
-  content: `
-    <p/>
-    <p/>
-    <p/>
-    <h1>Title</h1>
-    <p>This is a Description.</p>
-    `,
+  content: {
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph"
+      },
+      {
+        "type": "paragraph"
+      },
+      {
+        "type": "paragraph"
+      },
+      {
+        "type": "heading",
+        "attrs": {
+          "level": 1
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "One Piece of Content"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "This is a Description."
+          }
+        ]
+      }
+    ]
+  },
   background: {
     color: "#86efac",
     image: "",

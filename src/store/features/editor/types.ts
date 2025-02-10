@@ -1,3 +1,5 @@
+import { Node } from '@tiptap/react';
+
 export interface EditorState {
   slidesById: {
     [key: string]: Slide | null;
@@ -33,7 +35,7 @@ export type CardSlide = {
   id: string;
   type: string;
   title: string;
-  content: unknown;
+  content: Node;
   background: Background;
   // bottomSheetType: 'quiz' | 'text' | 'image' | 'layout';
 };
@@ -41,7 +43,7 @@ export type CardSlide = {
 export type SingleQuizSlide = {
   id: string;
   type: string;
-  quizType: string;
+  quizType: QuizType;
   question: string;
   options: {
     id: string;
@@ -55,7 +57,7 @@ export type SingleQuizSlide = {
 export type MultipleQuizSlide = {
   id: string;
   type: string;
-  quizType: string;
+  quizType: QuizType;
   question: string;
   options: {
     id: string;
@@ -83,6 +85,7 @@ export type AudioSlide = {
 };
 
 export type QuizSlide = SingleQuizSlide | MultipleQuizSlide;
+export type QuizType = 'single' | 'multiple';
 
 export type Slide = CardSlide | QuizSlide | VideoSlide | AudioSlide;
 

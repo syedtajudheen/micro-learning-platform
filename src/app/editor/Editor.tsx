@@ -19,11 +19,13 @@ import { Sheet } from "@/components/ui/sheet";
 import { Drawer } from "@/components/Drawer/Drawer";
 import { VideoSlide } from "@/components/Video/VideoSlide";
 import { Audio } from "@/components/Audio/Audio";
+import { useRouter } from "next/navigation";
 
 
 export default function Editor() {
   const [editorInstances, setEditorInstance] = useState({});
   const slidesRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   const isOverflow = useIsOverflow(slidesRef);
   const dispatch = useAppDispatch();
   const { slides, slidesById, overlay } = useAppSelector((state) => ({
@@ -118,6 +120,12 @@ export default function Editor() {
     dispatch(closeOverlay());
   };
 
+  const handleSave = () => {
+    const slidesToSave = slides.map((id) => slidesById[id]);
+    localStorage.setItem('slides', JSON.stringify(slidesToSave));
+    router.push('/content-player');
+  };
+
   const renderSlides = () => {
     return slides.map((id, index) => {
       const { content, type } = slidesById[id];
@@ -183,7 +191,11 @@ export default function Editor() {
 
   return (
     <>
-      <h1 className="text-center font-semibold p-8">Micro-Learning Platform</h1>
+      <div className="flex justify-between items-center w-[calc(100%-90px)] pr-8">
+        <h1 className="basis-3xl self-center font-semibold p-8">Micro-Learning Platform</h1>
+        <Button onClick={handleSave}>Save</Button>
+      </div>
+
       <Container>
         <Sheet
           open={overlay.isOpen}
