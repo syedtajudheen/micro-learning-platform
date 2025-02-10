@@ -57,7 +57,7 @@ export const Quiz = ({ id }) => {
           ...slide.options,
           {
             id: `option-${slide.options.length + 1}`,
-            label: `Option ${slide.options.length + 1}`
+            label: null
           }
         ]
       }
@@ -100,6 +100,7 @@ export const Quiz = ({ id }) => {
             <AutoGrowTextArea
               className={inputClassName}
               placeholder={placeholder}
+              value={option.label}
               onInput={(e) => handleInput(e, option.id)}
             />
           </Option>
@@ -122,6 +123,7 @@ export const Quiz = ({ id }) => {
             <AutoGrowTextArea
               className={inputClassName}
               placeholder={placeholder}
+              value={option.label}
               onInput={(e) => handleInput(e, option.id)}
             />
           </Option>
@@ -138,6 +140,7 @@ export const Quiz = ({ id }) => {
       <QuestionTextArea
         className={inputClassName}
         placeholder="Type your Question here"
+        value={slide.question}
         onInput={(e) => handleQuestionInput(e, 'question')}
       />
 
@@ -152,6 +155,7 @@ export const Quiz = ({ id }) => {
         <CommentTextArea
           className={inputClassName}
           placeholder="Comment will be displyed after the user choose any answers"
+          value={slide.comment}
           onInput={(e) => handleQuestionInput(e, 'comment')}
         />
       </CommentSection>

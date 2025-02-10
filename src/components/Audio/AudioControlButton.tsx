@@ -1,7 +1,7 @@
 import { PlayButton, useMediaState } from "@vidstack/react";
 import { Pause, Play } from "lucide-react";
 
-export const AudioControlButton = ({ progressId }) => {
+export const AudioControlButton = ({ progressRef }) => {
   const isPaused = useMediaState('paused');
 
   return (
@@ -15,8 +15,8 @@ export const AudioControlButton = ({ progressId }) => {
 
       <div className="flex-1 h-1 mr-5 bg-white/20 rounded-full overflow-hidden">
         <div
-          id={progressId}
-          className="h-full bg-white/80 transition-all duration-200"
+          ref={progressRef}
+          className="h-full bg-white/80 transition-transform duration-200 ease-linear origin-left"
         />
       </div>
     </div>

@@ -1,22 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import {
-  MediaPlayer,
-  MediaProvider,
-  MediaPlayerInstance
-} from '@vidstack/react';
 import { AudioLines } from 'lucide-react';
 import { BottomSheet } from '../BottomSheet';
 import { Button } from '../ui/button';
 import { closeBottomSheet, setAudio } from '@/store/features/editor/editorSlice';
-import { AudioControlButton } from './AudioControlButton';
+import { AudioPlayer } from './AudioPlayer';
 
 export const Audio = ({ id }) => {
-  const progressId = `audio-progress-${id}`;
   const dispatch = useAppDispatch();
   const isBottomSheetOpen = useAppSelector((state) => state.editor.bottomSheet?.[id] || false);
   const audioBg = useAppSelector((state) => state.editor.slidesById[id]?.audio);
-  const player = useRef<MediaPlayerInstance>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
 
@@ -44,40 +37,9 @@ export const Audio = ({ id }) => {
     setIsUploading(false);
   };
 
-  useEffect(() => {
-    const element = document.getElementById(progressId);
-    if (!element) return;
-
-    // Subscribe for updates without triggering renders.
-    return player.current?.subscribe(({ currentTime, duration }) => {
-      if (element) {
-        // Update the progress bar. (currentTime > 0.4s) added to fix second time playing progress sync issue
-        element.style.width = currentTime > 0.4 ? `${(currentTime / duration) * 100}%` : '0%';
-      }
-    });
-  }, [audioBg?.url, progressId]);
-  
   return (
     <div>
-      <div className="absolute bottom-4 left-4 right-4">
-        {audioBg?.url && (
-          <MediaPlayer
-            key={`player-${id}`}
-            ref={player}
-            className="bg-black/20 backdrop-blur-sm text-white rounded-full shadow-lg"
-            title="Audio Track"
-            src={audioBg.url}
-            crossOrigin
-          >
-            <MediaProvider>
-              <audio />
-            </MediaProvider>
-
-            <AudioControlButton progressId={progressId} />
-
-          </MediaPlayer>
-        )}
-      </div>
+      <AudioPlayer id={id} url={audioBg?.url} />
 
       <BottomSheet isOpen={isBottomSheetOpen} onClose={() => dispatch(closeBottomSheet(id))}>
         <p className='flex justify-center items-center font-sans text-sm'>

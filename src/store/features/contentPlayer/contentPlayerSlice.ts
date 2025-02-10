@@ -1,6 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { QuizSlide, QuizType, Slide } from "../editor/types";
 
+export type SlideEngagement = {
+  isCompleted: boolean;   // True if watched 90%+ (for LMS tracking)
+  viewCount: number;      // Number of times the slide has been viewed
+  totalWatchTime: number; // Total time spent on this slide (in seconds)
+  lastWatchedAt: string | null; // ISO timestamp of last interaction
+  progress: number;       // % watched (0 to 100)
+  engagementScore: number; // Custom metric (e.g., time + interactions)
+
+  // Playback-related tracking
+  watchSections: number[][]; // Array of watched time segments [[start, end], ...]
+  captionsEnabled: boolean;  // Whether captions were enabled
+  lastKnownPosition: number; // Last watched timestamp in the media
+};
+
 type ContentPlayerState = {
   currentSlide: string | null;
   slides: string[];
@@ -15,6 +29,9 @@ type ContentPlayerState = {
       selectedOptions: string[] | string | null;
     };
   };
+  slideEngagement: {
+    [slideId: string]: SlideEngagement
+  }
 };
 
 const initialState: ContentPlayerState = {
@@ -22,7 +39,7 @@ const initialState: ContentPlayerState = {
   slides: [],
   slidesById: {},
   quizResults: {},
-
+  slideEngagement: {}
 };
 
 const contentPlayerSlice = createSlice
@@ -57,6 +74,25 @@ const contentPlayerSlice = createSlice
           isPartiallyCorrect,
           selectedOptions
         }
+      },
+
+      setSlideEngagement: (state, action: PayloadAction<{
+        slideId: string,
+        isCompleted: boolean,
+        viewCount?: number,
+        totalWatchTime?: number,
+        lastWatchedAt?: string | null,
+        progress?: number,
+        engagementScore?: number,
+        watchSections?: number[][],
+        captionsEnabled?: boolean,
+        lastKnownPosition?: number
+      }>) => {
+        const { slideId, ...restProps } = action.payload;
+        state.slideEngagement[slideId] = {
+          ...(state.slideEngagement?.[slideId] || {}),
+          ...(restProps as SlideEngagement)
+        }
       }
     }
   });
@@ -64,6 +100,7 @@ const contentPlayerSlice = createSlice
 export const {
   setCurrentSlide,
   setSlides,
+  setSlideEngagement,
   submitQuiz
 } = contentPlayerSlice.actions;
 export default contentPlayerSlice.reducer;

@@ -51,15 +51,15 @@ export const defaultSingleQuizSlide = (id: string): SingleQuizSlide => ({
   id,
   type: "quiz",
   quizType: "single",
-  question: "What is the capital of France?",
+  question: "",
   options: [
     {
       id: "option-one",
-      label: "Option 1",
+      label: "",
     },
     {
       id: "option-two",
-      label: "Option 2",
+      label: "",
     }
   ],
   answer: "option-one",
@@ -76,15 +76,15 @@ export const defaultMultipleQuizSlide = (id: string): MultipleQuizSlide => ({
   id,
   type: "quiz",
   quizType: "multiple",
-  question: "What is the capital of France?",
+  question: "",
   options: [
     {
       id: "option-one",
-      label: "Option 1",
+      label: "",
     },
     {
       id: "option-two",
-      label: "Option 2",
+      label: "",
     }
   ],
   answer: ["option-one", "option-two"],
