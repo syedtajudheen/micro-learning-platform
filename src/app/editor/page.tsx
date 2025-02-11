@@ -1,13 +1,13 @@
 "use client"
 import React from "react";
-import StoreProvider from "../StoreProvider";
 import Editor from "./Editor";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 export default function EditorPage() {
 
   return (
-    <StoreProvider>
+    <ProtectedRoute>
       <Editor />
-    </StoreProvider>
+    </ProtectedRoute>
   );
 };

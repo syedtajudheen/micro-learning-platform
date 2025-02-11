@@ -193,7 +193,7 @@ export default function Editor() {
     <>
       <div className="flex justify-between items-center w-[calc(100%-90px)] pr-8">
         <h1 className="basis-3xl self-center font-semibold p-8">Micro-Learning Platform</h1>
-        <Button onClick={handleSave}>Save</Button>
+        <Button onClick={handleSave}>Preview</Button>
       </div>
 
       <Container>

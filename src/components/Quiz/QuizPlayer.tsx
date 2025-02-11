@@ -119,7 +119,11 @@ export const QuizPlayer = ({ slide, onSubmit }: { slide: QuizSlide, onSubmit: ()
             />
           </Option>
         ))}
-        <Button className="mt-2" onClick={handleSubmitClick} disabled={isQuizCompleted}>Submit</Button>
+        <Button
+          className="mt-2"
+          onClick={handleSubmitClick}
+          disabled={isQuizCompleted || !selectedAnswerOption?.length}
+        >Submit</Button>
       </div>
     )
   }

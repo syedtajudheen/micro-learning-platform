@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
 import editorReducer from './features/editor/editorSlice';
 import contentPlayerReducer from './features/contentPlayer/contentPlayerSlice';
+import authReducer from './features/auth/authSlice';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
+      auth: authReducer,
       contentPlayer: contentPlayerReducer,
       editor: editorReducer
     }

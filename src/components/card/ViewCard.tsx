@@ -1,21 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useInView } from 'react-intersection-observer';
+import Image from 'next/image';
+import { LoaderCircle } from 'lucide-react';
 
 export default function ViewCard({ background, className, children, id }) {
   const { ref, inView } = useInView({
     threshold: 0.5, // Trigger when 50% of slide is visible
   });
+  const [isLoaded, setIsLoaded] = useState(false);
 
   return (
     <Wrapper
       ref={ref}
-      $backgroundImage={background?.image}
       bgColor={background?.color}
       className={`overflow-hidden  shadow-sm ${className}`}
       opactiy={inView ? 1 : 0.5}
     >
-      {inView && children}
+      {background?.image && (
+        <Image
+          src={background?.image}
+          alt="Example"
+          layout="fill"
+          onLoad={() => {
+            console.log('Image loaded');
+            setIsLoaded(true);
+          }}
+          className={`w-full h-full bg-cover bg-center transition-opacity duration-500 ${isLoaded ? "opacity-100" : "opacity-0"
+            }`}
+        />
+      )
+      }
+
+      {!isLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center text-white">
+          <LoaderCircle className="animate-spin w-12 h-12" />
+        </div>
+      )}
+      {(inView && isLoaded) && children}
     </Wrapper>
   )
 };
@@ -27,11 +49,6 @@ const Wrapper = styled.div<{ $isOverflowHidden: boolean; $backgroundImage: strin
   height: 100%;
   overflow: hidden;
   opacity: ${({ opactiy }) => opactiy};
-  ${props => props.$backgroundImage && `
-    background-image: url(${props.$backgroundImage});
-    background-size: cover;
-    background-position: center;
-  `}
   ${({ bgColor }) => bgColor && `
     background-color: ${bgColor};
   `}
