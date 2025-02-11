@@ -22,7 +22,7 @@ export const AudioPlayer = ({ id, url }) => {
   }, [url, progressId]);
 
   return (
-    <div className="absolute bottom-4 left-4 right-4">
+    <div className="absolute bottom-4 left-4 right-4 isolate">
       {url && (
         <MediaPlayer
           key={`player-${id}`}

@@ -23,7 +23,7 @@ export const Audio = ({ id }) => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('/api/upload', {
+      const response = await fetch('/api/uploads', {
         method: 'POST',
         body: formData,
       });

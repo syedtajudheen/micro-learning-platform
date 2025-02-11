@@ -12,12 +12,12 @@ export async function POST(request: Request) {
     }
 
     // Simulate 3 second processing time
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // await new Promise(resolve => setTimeout(resolve, 3000));
 
-    const uploadDir = path.join(process.cwd(), 'public/uploads');
+    const uploadDir = path.join('/tmp', 'uploads');
     await mkdir(uploadDir, { recursive: true });
     
-    const fileName = `${Date.now()}-${file.name}`;
+    const fileName = file.name;
     const filePath = path.join(uploadDir, fileName);
     
     // Check if file exists
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       await access(filePath);
       // File exists, return existing path
       return NextResponse.json({
-        url: `/uploads/${fileName}`,
+        url: `/api/uploads/${fileName}`,
         message: 'File already exists',
         fileName: file.name,
         fileSize: file.size,
@@ -39,8 +39,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
-      url: `/uploads/${fileName}`,
-      message: 'Video uploaded successfully',
+      url: `/api/uploads/${fileName}`,
+      message: 'media uploaded successfully',
       fileName: file.name,
       fileSize: file.size,
       fileType: file.type
