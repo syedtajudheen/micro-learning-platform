@@ -104,7 +104,7 @@ export const ContentPlayer = () => {
 
   const renderAudio = () => {
     return (
-      <div onClick={(e) => e.stopPropagation()}>
+      <div onClick={(e) => e.stopPropagation()} className="isolate">
         <AudioPlayer id={slide?.id} url={slide?.audio?.url} />
       </div>
     )
@@ -112,7 +112,7 @@ export const ContentPlayer = () => {
 
   const renderVideo = () => {
     return (
-      <div>
+      <div className="isolate">
         <VideoPlayer id={slide?.id} url={slide?.video?.url} onEnded={() => {
           setIsForwardTapEnabled(true);
           dispatch(setSlideEngagement({

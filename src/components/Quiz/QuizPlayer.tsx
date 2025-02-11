@@ -181,6 +181,7 @@ const QuestionTextArea = styled(AutoGrowTextArea)`
 `;
 
 const QuizWrapper = styled.div`
+  isolation: isolate;
   background: transparent;
   overflow: hidden;
   width: 100%;

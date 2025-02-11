@@ -14,9 +14,6 @@ export function Unsplash({ onUnsplashImageClick }: { onUnsplashImageClick: (e: a
   const debouncedSearch = useDebounce(searchTerm, 600)
   const [isLoading, setIsLoading] = useState(false);
 
-  // Add a ref to track initial mount
-  const isFirstMount = useRef(true);
-
   const searchPhotos = async (query, page, perPage) => {
     try {
       const response = await fetch(
@@ -48,11 +45,6 @@ export function Unsplash({ onUnsplashImageClick }: { onUnsplashImageClick: (e: a
   };
 
   useEffect(() => {
-    if (isFirstMount.current) {
-      isFirstMount.current = false;
-      return;
-    }
-
     if (debouncedSearch) {
       searchImages(debouncedSearch, 1);
     }
