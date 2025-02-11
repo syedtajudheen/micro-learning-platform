@@ -16,6 +16,10 @@ export const VideoPlayer = ({ id, isGestureDisabled, url, onEnded }) => {
     onEnded();
   };
 
+  const handlePlay = (e) => {
+    e.stopPropagation();
+  };
+  
   useEffect(() => {
     // Subscribe for updates without triggering renders.
     return player.current?.subscribe(({ currentTime, duration }) => {
@@ -38,6 +42,7 @@ export const VideoPlayer = ({ id, isGestureDisabled, url, onEnded }) => {
           crossOrigin
           playsInline
           onEnded={handleEnded}
+          onPlay={handlePlay}
         >
 
           <MediaProvider className='w-full h-full [&>video]:w-full [&>video]:h-full [&>video]:object-cover'>

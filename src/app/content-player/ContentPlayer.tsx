@@ -10,20 +10,22 @@ import { CardSlide } from "@/store/features/editor/types";
 import { AudioPlayer } from "@/components/Audio/AudioPlayer";
 import { VideoPlayer } from "@/components/Video/VideoPlayer";
 import { SlideProgressBar } from "@/components/SlideProgressBar/SlideProgressBar";
+import { useIsDarkColor } from "@/hooks/useIsDark";
 
 export const ContentPlayer = () => {
   const [isForwardTapEnabled, setIsForwardTapEnabled] = useState(true);
   const { engagement, isQuizCompleted, slide, slides, currentSlide } = useAppSelector((state) => ({
     slides: state.contentPlayer.slides,
     currentSlide: state.contentPlayer.currentSlide,
-    slide: state.contentPlayer.slidesById[state.contentPlayer.currentSlide] || null,
-    isQuizCompleted: !!state.contentPlayer.quizResults?.[state.contentPlayer.currentSlide],
-    engagement: state.contentPlayer.slideEngagement?.[state.contentPlayer.currentSlide],
+    slide: state.contentPlayer.slidesById[state.contentPlayer.currentSlide as string] || null,
+    isQuizCompleted: !!state.contentPlayer.quizResults?.[state.contentPlayer.currentSlide as string],
+    engagement: state.contentPlayer.slideEngagement?.[state.contentPlayer.currentSlide as string],
   }));
   const dispatch = useAppDispatch();
   const { id, background, content } = slide || {};
   const slideRef = useRef(null);
   const slideProgressRef = useRef(null);
+  const isDarkImage = useIsDarkColor({ color: slide?.background?.color, image: slide?.background?.image });
   const editor = useEditor({
     editable: false,
     extensions: [...defaultExtensions],
@@ -132,7 +134,7 @@ export const ContentPlayer = () => {
         className="w-full h-full relative max-w-[432px] md:max-w-[820px] lg:max-w-[432px] mx-auto"
         onClick={handleTap}
       >
-        <SlideProgressBar ref={slideProgressRef} />
+        <SlideProgressBar ref={slideProgressRef} mode={isDarkImage ? "light" : "dark"} />
         <ViewCard
           id={id}
           background={background}
