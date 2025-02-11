@@ -8,8 +8,9 @@ export default function ViewCard({ background, className, children, id }) {
   const { ref, inView } = useInView({
     threshold: 0.5, // Trigger when 50% of slide is visible
   });
-  const [isLoaded, setIsLoaded] = useState(false);
-
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const isLoaded = background?.image ? isImageLoaded : true;
+  
   return (
     <Wrapper
       ref={ref}
@@ -24,9 +25,9 @@ export default function ViewCard({ background, className, children, id }) {
           layout="fill"
           onLoad={() => {
             console.log('Image loaded');
-            setIsLoaded(true);
+            setIsImageLoaded(true);
           }}
-          className={`w-full h-full bg-cover bg-center transition-opacity duration-500 ${isLoaded ? "opacity-100" : "opacity-0"
+          className={`w-full h-full bg-cover bg-center transition-opacity duration-500 ${isImageLoaded ? "opacity-100" : "opacity-0"
             }`}
         />
       )
