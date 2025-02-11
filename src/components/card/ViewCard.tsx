@@ -10,7 +10,7 @@ export default function ViewCard({ background, className, children, id }) {
   });
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const isLoaded = background?.image ? isImageLoaded : true;
-  
+
   return (
     <Wrapper
       ref={ref}
@@ -20,8 +20,9 @@ export default function ViewCard({ background, className, children, id }) {
     >
       {background?.image && (
         <Image
+          key={background?.image} // Add a unique key to prevent image flickering when loads another image
           src={background?.image}
-          alt="Example"
+          alt="Background Image"
           layout="fill"
           onLoad={() => {
             console.log('Image loaded');
