@@ -1,7 +1,7 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image';
-import useDebounce from '@/hooks/useDebounce';
+import useDebounceValue from '@/hooks/useDebounceValue';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 
@@ -11,7 +11,7 @@ export function Unsplash({ onUnsplashImageClick }: { onUnsplashImageClick: (e: a
   const [images, setImages] = useState([]);
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('gradients');
-  const debouncedSearch = useDebounce(searchTerm, 600)
+  const debouncedSearch = useDebounceValue(searchTerm, 800)
   const [isLoading, setIsLoading] = useState(false);
 
   const searchPhotos = async (query, page, perPage) => {
@@ -55,7 +55,7 @@ export function Unsplash({ onUnsplashImageClick }: { onUnsplashImageClick: (e: a
       <Input className='my-8' type="text" placeholder="Search Unsplash" onChange={(e) => setSearchTerm(e.target.value)} />
 
       <div className="grid grid-cols-2 gap-4">
-        {images.map((image) => (
+        {images?.map((image) => (
           <div
             key={image.id}
             className="relative aspect-square cursor-pointer hover:opacity-80"
