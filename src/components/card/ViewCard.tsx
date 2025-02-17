@@ -24,6 +24,7 @@ export default function ViewCard({ background, className, children, id }) {
           src={background?.image}
           alt="Background Image"
           layout="fill"
+          priority={true}
           onLoad={() => {
             console.log('Image loaded');
             setIsImageLoaded(true);

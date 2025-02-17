@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 export const defaultSlide: Slide = {
   id: uuidv4(),
   type: "card",
-  title: "Slide 1",
   content: {
     "type": "doc",
     "content": [

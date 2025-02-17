@@ -24,7 +24,7 @@ export default function LoginPage() {
   }
 
   if (user) {
-    router.replace("/editor");
+    router.replace("/courses");
     return null;
   }
 

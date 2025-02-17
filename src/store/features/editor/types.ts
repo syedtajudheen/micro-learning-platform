@@ -1,6 +1,11 @@
 import { Node } from '@tiptap/react';
 
 export interface EditorState {
+  lastUpdatedAt: number | null;
+  courseId: string | null,
+  error: string | null;
+  isSlidesLoading: boolean;
+  isSlidesSaving: boolean;
   slidesById: {
     [key: string]: Slide | null;
   },
@@ -34,7 +39,6 @@ export type MediaFile = {
 export type CardSlide = {
   id: string;
   type: string;
-  title: string;
   content: Node;
   background: Background;
   // bottomSheetType: 'quiz' | 'text' | 'image' | 'layout';

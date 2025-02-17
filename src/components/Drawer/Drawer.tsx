@@ -10,7 +10,7 @@ import { Unsplash } from "./Unsplash"
 type DrawerProps = {
   type: string;
   onGifClick: (e: any) => void;
-  onUnsplashImageClick: () => void;
+  onUnsplashImageClick: (e: any) => void;
 }
 
 export function Drawer({ type, onGifClick, onUnsplashImageClick }: DrawerProps) {
